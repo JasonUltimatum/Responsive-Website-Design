@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script data-require="angular.js@1.3.0" data-semver="1.3.0" src="https://code.angularjs.org/1.3.0/angular.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <style type="text/css">
+        body{
+            font-family: 'Open Sans', sans-serif;
+        }
+        .navbar .nav li {
+            color: black;
+        }
+        .main_block,.bills_block,.commit_block{
+            border-style: groove;
+            margin-right: 20px;
+            border-radius: 5px;
+        }
+        .sub_block{
+            border: 1px solid lightgrey;
+            border-radius: 5px;
+            margin:20px;
+        }
+        .well{
+            margin: 0px;
+        }
+
+    </style>
+    <script type="text/javascript">
+
+        $(document).ready(function(){
+            $('.bills_block').hide();
+            $('.commit_block').hide();
+            $.ajax({
+                url:'http://localhost/rwd.php',
+                data:{symbol: "AAPL"},
+                type:'GET',
+                success:function(response,status,xhr){
+
+                    var obj = eval("("+response+")");
+
+                    parse(obj,1);
+
+                },
+                error:function(xhr,status,error){
+
+                }
+
+            });
+            $('#state').change(function () {
+                var st = document.getElementById('state').value;
+                $.ajax({
+                    url:'http://localhost/rwd.php',
+                    data:{symbol:"state",content:st},
+                    type:'GET',
+                    success:function(response,status,xhr){
+
+                        var objst = eval("("+response+")");
+
+                        parse(objst,1);
+
+                    },
+                    error:function(xhr,status,error){
+
+                    }
+
+                });
+            });
+            $('#stateTab').click(function () {
+                $.ajax({
+                    url:'http://localhost/rwd.php',
+                    data:{symbol:"state",content:""},
+                    type:'GET',
+                    success:function(response,status,xhr){
+
+                        var objst = eval("("+response+")");
+                        parse(objst,1);
+
+                    },
+                    error:function(xhr,status,error){
+
+                    }
+
+                });
+            });
+            $('#houseTab').click(function () {
+                $.ajax({
+                    url:'http://localhost/rwd.php',
+                    data:{symbol:"house",content:""},
+                    type:'GET',
+                    success:function(response,status,xhr){
+
+                        var objst = eval("("+response+")");
+                        parse(objst,2);
+
+                    },
+                    error:function(xhr,status,error){
+
+                    }
+
+                });
+            });
+            $('#senateTab').click(function () {
+                $.ajax({
+                    url:'http://localhost/rwd.php',
+                    data:{symbol:"senate",content:""},
+                    type:'GET',
+                    success:function(response,status,xhr){
+
+                        var objst = eval("("+response+")");
+                        parse(objst,3);
+
+                    },
+                    error:function(xhr,status,error){
+
+                    }
+
+                });
+            });
+            $('#activeTab').click(function () {
+                $.ajax({
+                    url:'http://localhost/rwd.php',
+                    data:{symbol:"activeBill",content:""},
+                    type:'GET',
+                    success:function(response,status,xhr){
+
+                        var objst = eval("("+response+")");
+                        parseBills(objst,1);
+
+                    },
+                    error:function(xhr,status,error){
+
+                    }
+
+                });
+            });
+            $('#newTab').click(function () {
+                $.ajax({
+                    url:'http://localhost/rwd.php',
+                    data:{symbol:"newBill",content:""},
+                    type:'GET',
+                    success:function(response,status,xhr){
+
+                        var objst = eval("("+response+")");
+                        parseBills(objst,2);
+
+                    },
+                    error:function(xhr,status,error){
+
+                    }
+
+                });
+            });
+            $('#houseTabC').click(function () {
+                $.ajax({
+                    url:'http://localhost/rwd.php',
+                    data:{symbol:"houseC",content:""},
+                    type:'GET',
+                    success:function(response,status,xhr){
+
+                        var objst = eval("("+response+")");
+                        parseCommit(objst,1);
+
+                    },
+                    error:function(xhr,status,error){
+
+                    }
+
+                });
+            });
+            $('#senateTabC').click(function () {
+                $.ajax({
+                    url:'http://localhost/rwd.php',
+                    data:{symbol:"senateC",content:""},
+                    type:'GET',
+                    success:function(response,status,xhr){
+
+                        var objst = eval("("+response+")");
+                        parseCommit(objst,2);
+
+                    },
+                    error:function(xhr,status,error){
+
+                    }
+
+                });
+            });
+            $('#jointTabC').click(function () {
+                $.ajax({
+                    url:'http://localhost/rwd.php',
+                    data:{symbol:"jointC",content:""},
+                    type:'GET',
+                    success:function(response,status,xhr){
+
+                        var objst = eval("("+response+")");
+                        parseCommit(objst,3);
+
+                    },
+                    error:function(xhr,status,error){
+
+                    }
+
+                });
+            });
+
+            $('#legislator').click(function () {
+                $('.commit_block').hide();
+                $('.main_block').show();
+                $('.bills_block').hide();
+            });
+            $('#Bills').click(function () {
+                $('.commit_block').hide();
+                $('.main_block').hide();
+                $('.bills_block').show();
+                $.ajax({
+                    url:'http://localhost/rwd.php',
+                    data:{symbol: "activeBill",content:"activeBill"},
+                    type:'GET',
+                    success:function(response,status,xhr){
+
+                        var obj = eval("("+response+")");
+
+                        parseBills(obj,1);
+
+                    },
+                    error:function(xhr,status,error){
+
+                    }
+
+                });
+            });
+            $('#Committees').click(function () {
+                $('.main_block').hide();
+                $('.bills_block').hide();
+                $('.commit_block').show();
+                $.ajax({
+                    url:'http://localhost/rwd.php',
+                    data:{symbol: "houseC",content:"activeBill"},
+                    type:'GET',
+                    success:function(response,status,xhr){
+
+                        var obj = eval("("+response+")");
+
+                        parseCommit(obj,1);
+
+                    },
+                    error:function(xhr,status,error){
+
+                    }
+
+                });
+            });
+            $('.carousel').carousel({
+                interval: 6000
+            });
+        });
+        function parseCommit(data,tab){
+            var content ="";
+            var count= data.results.length;
+            for(var i=0;i<count;i++){
+                var res =data.results[i];
+                content+="<tr>";
+                if(res.chamber=='house'){
+                    content+="<td>"+"<img src='images/h.png' width='20px'height='20px'>"+"House"+"</td>";
+                }else{
+                    content+="<td>"+"<img src='images/s.svg' width='20px'height='20px'>"+"Senate"+"</td>";
+                }
+                content+="<td>"+res.committee_id+"</td>";
+                content+="<td>"+res.name+"</td>";
+                if(typeof(res.parent_committee_id)=="undefined"){
+                    content += "<td>N.A.</td>";
+                }else {
+                    content += "<td>" + res.parent_committee_id + "</td>";
+                }
+                if(typeof(res.parent_committee_id)=="undefined"){
+                    content += "<td>N.A.</td>";
+                }else {
+                    content+="<td>"+res.phone+"</td>";
+                }
+                if(typeof(res.parent_committee_id)=="undefined"){
+                    content += "<td>N.A.</td>";
+                }else {
+                    content+="<td>"+res.office+"</td>";
+                }
+
+
+                content+="<td><button  class=' detail btn btn-primary '>View Details</button></td>";
+                content+="</tr>";
+            }
+            if(tab == 1) {
+                $('#tbody_houseC').html(content);
+            }
+            if(tab == 2){
+                $('#tbody_senateC').html(content);
+            }
+            if(tab ==3){
+                $('#tbody_jointC').html(content);
+            }
+        }
+        function parseBills(data,tab) {
+            var content ="";
+            var count= data.results.length;
+            for(var i=0;i<count;i++){
+                var res =data.results[i];
+                content+="<tr>";
+                content+="<td>"+res.bill_id+"</td>";
+                content+="<td>"+res.bill_type+"</td>";
+                content+="<td>"+res.short_title+"</td>";
+                if(res.chamber=='house'){
+                    content+="<td>"+"<img src='images/h.png' width='20px'height='20px'>"+"House"+"</td>";
+                }else{
+                    content+="<td>"+"<img src='images/s.svg' width='20px'height='20px'>"+"Senate"+"</td>";
+                }
+                content+="<td>"+res.introduced_on+"</td>";
+                var s = res.sponsor;
+                content+="<td>"+s.title+". "+s.first_name+", "+s.last_name+"</td>";
+                content+="<td><button  class=' detail btn btn-primary '>View Details</button></td>";
+                content+="</tr>";
+            }
+            if(tab == 1) {
+                $('#tbody_activebill').html(content);
+            }
+            if(tab == 2) {
+                $('#tbody_newbill').html(content);
+            }
+
+        }
+        function parse(data,tab){
+            var content = "";
+//            content+="<div class='page-header'><h3>Legislators</h3> </div>";
+//            content+="<ul class='nav nav-tabs'>";
+//            content+="<li id='stateTab' class='active'><a data-toggle='tab' href='#Bystate'>By State</a></li>";
+//            content+=" <li id='houseTab'><a data-toggle='tab' href='#Byhouse'>House</a></li>";
+//            content+="<li id='senateTab'><a data-toggle='tab' href='#Bysenate'>Senate</a></li> </ul>";
+
+
+            // var page = "<ul class='pagination'>";
+            var count = data.results.length;
+
+            // for(var j = 1;j < count/20+1;j++){
+
+            //     page+="<li><a href='' onclick='showInfo("+legisRes+","+j+")'>"+j+"</a></li>";
+            // }
+            //  page+="</ul>";
+            // $('#pagination').html(page);
+            for(var i = 0;i<count;i++){
+                var legisRes = data.results[i];
+                content+="<tr>";
+                var party = legisRes.party;
+
+                if(party=="R"){
+                    content+="<td>"+"<img src='images/r.png' width='20px'height='20px'>"+"</td>";
+                }else if(party=="D"){
+                    content+="<td>"+"<img src='images/d.png' width='20px'height='20px'>"+"</td>";
+                }else{
+                    content+="<td>"+"<img src='images/i.png' width='20px'height='20px'>"+"</td>";
+                }
+                content+="<td>"+legisRes.first_name+","+legisRes.last_name+"</td>";
+                if(legisRes.chamber=='house'){
+                    content+="<td>"+"<img src='images/h.png' width='20px'height='20px'>"+"House"+"</td>";
+                }else{
+                    content+="<td>"+"<img src='images/s.svg' width='20px'height='20px'>"+"Senate"+"</td>";
+                }
+                if(legisRes.district==null){
+                    content+="<td>"+"N.A."+"</td>";
+                }else{
+                    content+="<td>"+"District "+legisRes.district+"</td>";
+                }
+                content+="<td>"+legisRes.state_name+"</td>";
+                content+="<td>";
+//                content+= "<a class='right carousel-control' href='#myCarousel' role='button'data-slide='next'>";
+                content+="<button  class=' detail btn btn-primary ' value ='"+legisRes.bioguide_id+"'>View Details</button>"
+//                content+= "</a>"
+                content+= "</td>";
+                content+="</tr>";
+            }
+            //1--state, 2--house, 3--senate
+            if(tab == 1) {
+                $('#tbody_legis').html(content);
+            }
+            if(tab == 2){
+                $('#tbody_house').html(content);
+            }
+            if(tab ==3){
+                $('#tbody_senate').html(content);
+            }
+
+        }
+        function togg() {
+            var ro = $('.ro');
+            ro.toggle();
+            var main = $('.main_block');
+            main.addClass('col-md-offset-2');
+            if (!ro.is(':visible')) {
+                main.removeClass('col-md-offset-2');
+            }
+        }
+
+    </script>
+</head>
+<body>
+<div class="page-header-sm" align="center" >
+    <button class="glyphicon glyphicon-menu-hamburger" onclick="togg()" style="float: left; margin:10px;"></button>
+    <h5  style="display: inline-block;"><a href="http://sunlightfoundation.com/" target="_blank"><img src="images/logo.png" width="100" height="30"></a><b>Congress API</b></h5>
+</div>
+
+<div class = "container-fluid">
+
+    <div class="ro" >
+        <div class="col-md-2" >
+            <ul class="nav nav-list affix" >
+                <li id="legislator"><a href="#"><span class="glyphicon glyphicon-user"></span>Legislator</a></li>
+                <li id="Bills"><a href="#"><span class="glyphicon glyphicon-file"></span>Bills</a></li>
+                <li id="Committees"><a href="#"><span class="glyphicon glyphicon-log-out"></span>Committees</a></li>
+                <li><a href="#"><span class="glyphicon glyphicon-star"></span>Favorites</a></li>
+            </ul>
+        </div>
+    </div>
+    <!--<div id="myCarousel" class="carousel slide" data-ride="carousel">-->
+        <!--<div class="carousel-inner" role="listbox">-->
+            <!--<div class="item active">-->
+    <div class="main_block col-md-offset-2">
+
+        <div class="page-header">
+            <h3>Legislators</h3>
+        </div>
+
+        <ul class="nav nav-tabs">
+            <li id="stateTab" class="active"><a data-toggle="tab" href="#Bystate">By State</a></li>
+            <li id="houseTab"><a data-toggle="tab" href="#Byhouse">House</a></li>
+            <li id="senateTab"><a data-toggle="tab" href="#Bysenate">Senate</a></li>
+        </ul>
+
+
+        <div class="tab-content">
+            <div class='sub_block tab-pane fade in active' id ='Bystate'>
+
+                <form class="form-inline">
+                    <div class="well">
+                        <span style="margin-right: 60%; ">Legislators By State</span>
+                        <select name="state" id="state" class="form-control" style="float: right;" >
+                            <option value="">All States</option>
+                            <option value="AL">Alabama</option>
+                            <option value="AK">Alaska</option>
+                            <option value="AZ">Arizona</option>
+                            <option value="AR">Arkansas</option>
+                            <option value="CA">California</option>
+                            <option value="CO">Colorado</option>
+                            <option value="CT">Connecticut</option>
+                            <option value="DE">Delaware</option>
+                            <option value="DC">District Of Columbia</option>
+                            <option value="FL">Florida</option>
+                            <option value="GA">Georgia</option>
+                            <option value="HI">Hawaii</option>
+                            <option value="ID">Idaho</option>
+                            <option value="IL">Illinois</option>
+                            <option value="IN">Indiana</option>
+                            <option value="IA">Iowa</option>
+                            <option value="KS">Kansas</option>
+                            <option value="KY">Kentucky</option>
+                            <option value="LA">Louisiana</option>
+                            <option value="ME">Maine</option>
+                            <option value="MD">Maryland</option>
+                            <option value="MA">Massachusetts</option>
+                            <option value="MI">Michigan</option>
+                            <option value="MN">Minnesota</option>
+                            <option value="MS">Mississippi</option>
+                            <option value="MO">Missouri</option>
+                            <option value="MT">Montana</option>
+                            <option value="NE">Nebraska</option>
+                            <option value="NV">Nevada</option>
+                            <option value="NH">New Hampshire</option>
+                            <option value="NJ">New Jersey</option>
+                            <option value="NM">New Mexico</option>
+                            <option value="NY">New York</option>
+                            <option value="NC">North Carolina</option>
+                            <option value="ND">North Dakota</option>
+                            <option value="OH">Ohio</option>
+                            <option value="OK">Oklahoma</option>
+                            <option value="OR">Oregon</option>
+                            <option value="PA">Pennsylvania</option>
+                            <option value="RI">Rhode Island</option>
+                            <option value="SC">South Carolina</option>
+                            <option value="SD">South Dakota</option>
+                            <option value="TN">Tennessee</option>
+                            <option value="TX">Texas</option>
+                            <option value="UT">Utah</option>
+                            <option value="VT">Vermont</option>
+                            <option value="VA">Virginia</option>
+                            <option value="WA">Washington</option>
+                            <option value="WV">West Virginia</option>
+                            <option value="WI">Wisconsin</option>
+                            <option value="WY">Wyoming</option>
+                        </select>
+                    </div>
+                </form>
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Party</th>
+                        <th>Name</th>
+                        <th>Chamber</th>
+                        <th>District</th>
+                        <th>State</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody id="tbody_legis" class="tbody_legis">
+
+                    </tbody>
+
+                </table>
+                <div id="pagination">
+                </div>
+
+            </div>
+            <div class="sub_block tab-pane fade" id = "Byhouse">
+                <form class="form-inline">
+                    <div class="well">
+                        <span style="margin-right: 60%; ">Legislators By House</span>
+                        <input type="text" class="form-control"  id="houseSearch"
+                               placeholder="Search" style="float: right">
+                    </div>
+                </form>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Party</th>
+                        <th>Name</th>
+                        <th>Chamber</th>
+                        <th>District</th>
+                        <th>State</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody id="tbody_house" class="tbody_legis">
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="sub_block tab-pane fade" id = "Bysenate">
+                <form class="form-inline">
+                    <div class="well">
+                        <span style="margin-right: 60%; ">Legislators By House</span>
+                        <input type="text" class="form-control"  id="senateSearch"
+                               placeholder="Search" style="float: right">
+                    </div>
+                </form>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Party</th>
+                        <th>Name</th>
+                        <th>Chamber</th>
+                        <th>District</th>
+                        <th>State</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody id="tbody_senate" class="tbody_legis">
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+    <div class="bills_block col-md-offset-2">
+        <div class="page-header">
+            <h3>Bills</h3>
+        </div>
+
+        <ul class="nav nav-tabs">
+            <li id="activeTab" class="active"><a data-toggle="tab" href="#Byactive">Active Bills</a></li>
+            <li id="newTab"><a data-toggle="tab" href="#Bynew">New Bills</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div class='sub_block tab-pane fade in active' id ='Byactive'>
+                <form class="form-inline">
+                    <div class="well">
+                        <span style="margin-right: 60%; ">Active Bills</span>
+                        <input type="text" class="form-control"  id="activeSearch"
+                               placeholder="Search" style="float: right">
+                    </div>
+                </form>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Bill ID</th>
+                        <th>Bill Type</th>
+                        <th>Title</th>
+                        <th>Chamber</th>
+                        <th>Introduced On</th>
+                        <th>Sponsor</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody id="tbody_activebill" class="tbody_bill">
+
+                    </tbody>
+                </table>
+            </div>
+            <div class='sub_block tab-pane fade' id ='Bynew'>
+                <form class="form-inline">
+                    <div class="well">
+                        <span style="margin-right: 60%; ">New Bills</span>
+                        <input type="text" class="form-control"  id="newSearch"
+                               placeholder="Search" style="float: right">
+                    </div>
+                </form>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Bill ID</th>
+                        <th>Bill Type</th>
+                        <th>Title</th>
+                        <th>Chamber</th>
+                        <th>Introduced On</th>
+                        <th>Sponsor</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody id="tbody_newbill" class="tbody_bill">
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="commit_block col-md-offset-2">
+        <div class="page-header">
+            <h3>Committees</h3>
+        </div>
+
+        <ul class="nav nav-tabs">
+            <li id="houseTabC" class="active"><a data-toggle="tab" href="#ByhouseC">House</a></li>
+            <li id="senateTabC"><a data-toggle="tab" href="#BysenateC">Senate</a></li>
+            <li id="jointTabC"><a data-toggle="tab" href="#Byjoint">Joint</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class='sub_block tab-pane fade in active' id ='ByhouseC'>
+
+                <form class="form-inline">
+                    <div class="well">
+                        <span style="margin-right: 60%; ">House</span>
+                        <input type="text" class="form-control"  id="houseCSearch"
+                               placeholder="Search" style="float: right">
+                    </div>
+                </form>
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Chamber</th>
+                        <th>Committee<br>ID</th>
+                        <th>Name</th>
+                        <th>Parent<br>Committee</th>
+                        <th>Contact</th>
+                        <th>Office</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tbody_houseC" class="tbody_legis">
+
+                    </tbody>
+                </table>
+
+            </div>
+            <div class="sub_block tab-pane fade" id = "BysenateC">
+                <form class="form-inline">
+                    <div class="well">
+                        <span style="margin-right: 60%; ">Legislators By House</span>
+                        <input type="text" class="form-control"  id="senateCSearch"
+                               placeholder="Search" style="float: right">
+                    </div>
+                </form>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Chamber</th>
+                        <th>Committee<br>ID</th>
+                        <th>Name</th>
+                        <th>Parent<br>Committee</th>
+                        <th>Contact</th>
+                        <th>Office</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tbody_senateC" class="tbody_legis">
+
+                    </tbody>
+                </table>
+            </div>
+            <div class="sub_block tab-pane fade" id = "Byjoint">
+                <form class="form-inline">
+                    <div class="well">
+                        <span style="margin-right: 60%; ">Legislators By House</span>
+                        <input type="text" class="form-control"  id="jointSearch"
+                               placeholder="Search" style="float: right">
+                    </div>
+                </form>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Chamber</th>
+                        <th>Committee<br>ID</th>
+                        <th>Name</th>
+                        <th>Parent<br>Committee</th>
+                        <th>Contact</th>
+                        <th>Office</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tbody_jointC" class="tbody_commit">
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+            <!--</div>-->
+            <!--<div class="item">-->
+
+            <!--</div>-->
+            <!--</div>-->
+        <!--&lt;!&ndash;inner&ndash;&gt;-->
+    <!--</div>-->
+    <!--carousel-->
+</div>
+</body>
+</html>
